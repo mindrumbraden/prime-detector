@@ -1,20 +1,22 @@
-#%%
+# %%
 
 import requests
 import zipfile
 import warnings
 import os
 
-#%%
+# %%
+
 
 def main():
+    os.chdir(os.path.dirname(os.path.abspath(__file__)))
     warnings.warn("""
                   A file called 'primes.txt' should be created. The user
-                  should verify that the non-whitespace characters in 
+                  should verify that the non-whitespace characters in
                   'primes.txt' only consist of the primes beginning with 2
-                  (in case the URL (or its zip file) has changed since 
+                  (in case the URL (or its zip file) has changed since
                   the creation of this python script).
-                  
+
                   The quantity and type of whitespace characters should
                   not matter.
                   """)
@@ -33,9 +35,10 @@ def main():
     os.remove("primes1.txt")
     return(0)
 
-#%%
+# %%
+
 
 if __name__ == "__main__":
     main()
 
-#%%
+# %%

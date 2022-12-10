@@ -1,11 +1,13 @@
-#%%
+# %%
 
 import numpy as np
 import random
 import warnings
 import pickle
+import os
 
-#%%
+# %%
+
 
 class SortedArray:
     def __init__(self, an_already_sorted_array, warn_user=True):
@@ -20,7 +22,7 @@ class SortedArray:
                           element checking quick when the np.array is sorted. 
                       """)
         self.array = an_already_sorted_array
-        
+
     def __contains__(self, item):
         for i in range(len(self.array)):
             if item == self.array[i]:
@@ -32,14 +34,16 @@ class SortedArray:
         return(False)
 
     def __getitem__(self, item):
-         return SortedArray(self.array[item], warn_user=False)
-    
-#%%
+        return SortedArray(self.array[item], warn_user=False)
+
+# %%
+
 
 def primes_text_to_array(lines):
     lines = ' '.join(lines)
     lines = lines.split()
     return(np.array([np.uint32(x) for x in lines]))
+
 
 def create_np_arrays_of_primes_and_composites(file_name, n_primes):
     with open(file_name) as f:
@@ -59,7 +63,8 @@ def create_np_arrays_of_primes_and_composites(file_name, n_primes):
     composites = np.trim_zeros(composites, trim="b")
     return(primes.array, composites)
 
-def create_train_xy_and_test_xy(primes, composites, seed, 
+
+def create_train_xy_and_test_xy(primes, composites, seed,
                                 training_size, n_primes):
     primes = np.concatenate(
         [
@@ -76,13 +81,13 @@ def create_train_xy_and_test_xy(primes, composites, seed,
         axis=1
     )
     integers = np.concatenate([primes, composites])
-    N = primes[-1][0] - 1 # equal to len(integers), or max integer to consider
-    
+    N = primes[-1][0] - 1  # equal to len(integers), or max integer to consider
+
     random.seed(seed)
     training_indices = np.array(
         random.sample(range(N), round(N * training_size)), dtype=np.uint32
     )
-    
+
     testing_boolean = np.array(
         [True for i in range(N)]
     )
@@ -99,17 +104,18 @@ def create_train_xy_and_test_xy(primes, composites, seed,
         np.array(random.sample(
             list(np.where(training_indices >= n_primes)[0]),
             len(prime_training_indices)
-            ))
-    ]    
+        ))
+    ]
     training_boolean[prime_training_indices] = True
     training_boolean[composite_training_indices] = True
     training_data = integers[training_boolean, :]
-    
+
     train_x = training_data[:, 0]
     train_y = training_data[:, 1]
     test_x = testing_data[:, 0]
     test_y = testing_data[:, 1]
     return(train_x, train_y, test_x, test_y)
+
 
 def int_to_input(n, digits):
     n = str(int(n))
@@ -120,6 +126,7 @@ def int_to_input(n, digits):
     result = np.flip(result)
     #result = np.expand_dims(result, axis=0)
     return(result)
+
 
 def input_to_int(result):
     result = result.squeeze()
@@ -132,14 +139,16 @@ def input_to_int(result):
             n += digit * 10**power
     return(n)
 
-#%%
+# %%
+
 
 def main():
+    os.chdir(os.path.dirname(os.path.abspath(__file__)))
     file_name = "primes.txt"
     n_primes = 100000
     training_size = 0.75
     seed = 13731
-    
+
     primes, composites = create_np_arrays_of_primes_and_composites(
         file_name, n_primes
     )
@@ -150,7 +159,7 @@ def main():
     test_x = np.array([int_to_input(n, 10) for n in test_x], dtype=np.int32)
     train_y = np.array(train_y, dtype=np.int32)
     test_y = np.array(test_y, dtype=np.int32)
-    
+
     with open("train_x.pickle", "wb") as handle:
         pickle.dump(train_x, handle, protocol=pickle.HIGHEST_PROTOCOL)
     with open("test_x.pickle", "wb") as handle:
@@ -161,9 +170,10 @@ def main():
         pickle.dump(test_y, handle, protocol=pickle.HIGHEST_PROTOCOL)
     return(0)
 
-#%%
+# %%
+
 
 if __name__ == "__main__":
     main()
 
-#%%
+# %%
